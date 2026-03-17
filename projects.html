@@ -1,0 +1,343 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Build logs, homelab documentation, computer repair, and the trade-for-tech program." />
+  <title>Projects // The Wastelander</title>
+  <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@300;400;600;700&family=Share+Tech+Mono&family=Source+Serif+4:ital,wght@0,300;0,400;1,300&display=swap" rel="stylesheet" />
+  <style>
+    :root{--amber:#e8a020;--amber-dim:#a86e10;--amber-glow:#ffbe44;--green:#4ade80;--red:#ef4444;--bg:#0a0905;--bg-panel:#100e08;--bg-raised:#161209;--border:#2a2218;--border-lit:#4a3a20;--text:#c8a870;--text-dim:#7a6040;--text-bright:#f0d090;--mono:'Share Tech Mono',monospace;--display:'Oswald',sans-serif;--serif:'Source Serif 4',serif;}
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+    html{scroll-behavior:smooth;}
+    body{background:var(--bg);color:var(--text);font-family:var(--serif);font-weight:300;font-size:16px;line-height:1.7;}
+    body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,0,0,0.08) 2px,rgba(0,0,0,0.08) 4px);pointer-events:none;z-index:9999;}
+    body::after{content:'';position:fixed;inset:0;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");pointer-events:none;z-index:9998;opacity:0.4;}
+    @keyframes blink{0%,100%{opacity:1}50%{opacity:0}}
+    @keyframes fadeup{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
+    @keyframes scandown{from{transform:translateY(-100%)}to{transform:translateY(100vh)}}
+    .tape{background:var(--amber);color:var(--bg);font-family:var(--mono);font-size:11px;letter-spacing:0.15em;padding:5px 40px;display:flex;justify-content:space-between;align-items:center;}
+    .tape .blink{animation:blink 1.2s step-end infinite;}
+    header{padding:56px 40px 40px;border-bottom:1px solid var(--border-lit);background:linear-gradient(180deg,#1a1408 0%,var(--bg) 100%);position:relative;overflow:hidden;}
+    header .scan-line{position:absolute;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,rgba(232,160,32,0.15),transparent);animation:scandown 6s linear infinite;pointer-events:none;}
+    .eyebrow{font-family:var(--mono);font-size:11px;letter-spacing:0.3em;color:var(--amber-dim);text-transform:uppercase;margin-bottom:16px;}
+    h1{font-family:var(--display);font-weight:700;font-size:clamp(2.4rem,5vw,4rem);line-height:1;letter-spacing:0.06em;text-transform:uppercase;color:var(--amber-glow);text-shadow:0 0 40px rgba(232,160,32,0.3),0 0 80px rgba(232,160,32,0.1);margin-bottom:12px;animation:fadeup 0.6s ease both;}
+    .header-sub{font-family:var(--mono);font-size:12px;letter-spacing:0.2em;color:var(--text-dim);text-transform:uppercase;margin-bottom:28px;}
+    .header-meta{display:flex;gap:24px;flex-wrap:wrap;}
+    .meta-item{font-family:var(--mono);font-size:11px;letter-spacing:0.12em;color:var(--text-dim);display:flex;align-items:center;gap:8px;}
+    .meta-item span{color:var(--amber);}
+    nav{background:var(--bg-panel);border-bottom:1px solid var(--border);padding:0 40px;display:flex;overflow-x:auto;gap:0;position:sticky;top:0;z-index:100;}
+    nav a{font-family:var(--mono);font-size:11px;letter-spacing:0.12em;text-transform:uppercase;color:var(--text-dim);text-decoration:none;padding:14px 20px;border-right:1px solid var(--border);white-space:nowrap;transition:color 0.15s,background 0.15s;}
+    nav a:first-child{border-left:1px solid var(--border);}
+    nav a:hover,nav a.active{color:var(--amber);background:rgba(232,160,32,0.05);}
+    main{max-width:1100px;margin:0 auto;padding:56px 40px 100px;}
+    .btn{font-family:var(--mono);font-size:11px;letter-spacing:0.15em;text-transform:uppercase;text-decoration:none;padding:10px 20px;border:1px solid var(--border-lit);color:var(--amber);background:var(--bg-panel);transition:all 0.15s;cursor:pointer;display:inline-block;}
+    .btn:hover{background:var(--amber);color:var(--bg);border-color:var(--amber);}
+    .btn.primary{background:var(--amber);color:var(--bg);border-color:var(--amber);}
+    .btn.primary:hover{background:var(--amber-glow);border-color:var(--amber-glow);}
+    .btn-row{display:flex;gap:8px;flex-wrap:wrap;margin-top:24px;}
+    .dot{display:inline-block;width:6px;height:6px;border-radius:50%;margin-right:6px;}
+    .dot.online{background:var(--green);box-shadow:0 0 6px var(--green);}
+    .dot.pending{background:var(--amber);animation:blink 1.5s step-end infinite;}
+    .dot.offline{background:var(--red);}
+    .section{margin-bottom:64px;animation:fadeup 0.5s ease both;}
+    .section-head{display:flex;align-items:center;gap:14px;padding-bottom:14px;border-bottom:1px solid var(--border-lit);margin-bottom:32px;}
+    .sec-num{font-family:var(--mono);font-size:11px;color:var(--amber-dim);border:1px solid var(--border-lit);background:var(--bg-panel);padding:3px 9px;letter-spacing:0.1em;flex-shrink:0;}
+    h2{font-family:var(--display);font-weight:600;font-size:1.3rem;letter-spacing:0.12em;text-transform:uppercase;color:var(--text-bright);}
+    h3{font-family:var(--display);font-weight:400;font-size:1rem;letter-spacing:0.14em;text-transform:uppercase;color:var(--amber);margin:28px 0 14px;}
+    .build-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:4px;}
+    .build-card{background:var(--bg-panel);border:1px solid var(--border);transition:border-color 0.15s;text-decoration:none;display:block;position:relative;overflow:hidden;}
+    .build-card:hover{border-color:var(--border-lit);}
+    .build-card:hover .card-arrow{color:var(--amber);}
+    .card-top{padding:18px 20px 14px;border-bottom:1px solid var(--border);}
+    .card-tag{font-family:var(--mono);font-size:10px;letter-spacing:0.2em;color:var(--amber-dim);text-transform:uppercase;margin-bottom:8px;}
+    .card-title{font-family:var(--display);font-weight:600;font-size:1.05rem;letter-spacing:0.08em;text-transform:uppercase;color:var(--text-bright);margin-bottom:6px;}
+    .card-date{font-family:var(--mono);font-size:10px;color:var(--text-dim);letter-spacing:0.1em;}
+    .card-body{padding:14px 20px 16px;}
+    .card-desc{font-size:0.88rem;color:var(--text);line-height:1.6;}
+    .card-footer{display:flex;justify-content:space-between;align-items:center;padding:10px 20px;border-top:1px solid var(--border);font-family:var(--mono);font-size:10px;}
+    .card-status{display:flex;align-items:center;gap:6px;}
+    .card-arrow{color:var(--text-dim);transition:color 0.15s;}
+    .hw-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:4px;}
+    .hw-card{background:var(--bg-panel);border:1px solid var(--border);padding:20px;}
+    .hw-card-label{font-family:var(--mono);font-size:10px;letter-spacing:0.2em;color:var(--amber-dim);text-transform:uppercase;margin-bottom:10px;}
+    .hw-card-name{font-family:var(--display);font-weight:600;font-size:1rem;letter-spacing:0.08em;text-transform:uppercase;color:var(--text-bright);margin-bottom:14px;padding-bottom:10px;border-bottom:1px solid var(--border);}
+    .hw-spec{display:flex;justify-content:space-between;font-family:var(--mono);font-size:10px;padding:5px 0;border-bottom:1px solid var(--border);}
+    .hw-spec:last-child{border-bottom:none;}
+    .hw-spec-key{color:var(--text-dim);letter-spacing:0.08em;}
+    .hw-spec-val{color:var(--text-bright);letter-spacing:0.05em;text-align:right;}
+    .callout{border-left:3px solid var(--amber);background:rgba(232,160,32,0.05);padding:14px 18px;margin:20px 0;font-size:0.87rem;}
+    .callout-label{font-family:var(--mono);font-size:10px;letter-spacing:0.2em;text-transform:uppercase;color:var(--amber);margin-bottom:6px;}
+    footer{border-top:1px solid var(--border);padding:24px 40px;font-family:var(--mono);font-size:10px;letter-spacing:0.15em;color:var(--text-dim);display:flex;justify-content:space-between;flex-wrap:wrap;gap:12px;}
+    footer a{color:var(--amber-dim);text-decoration:none;}
+    footer a:hover{color:var(--amber);}
+    @media(max-width:640px){header,main,footer{padding-left:20px;padding-right:20px;}nav{padding:0 20px;}.tape{padding:5px 20px;}}
+  </style>
+</head>
+<body>
+
+  <div class="tape">
+    <span>THEWASTELANDER.COM // BUILD DOCUMENTATION</span>
+    <span class="blink">● TRANSMITTING</span>
+  </div>
+
+  <header>
+    <div class="scan-line"></div>
+    <div class="eyebrow">Active Operations // Build Logs &amp; Services</div>
+    <h1>Projects</h1>
+    <div class="header-sub">Homelab builds, hardware docs, repairs &amp; the trade program</div>
+    <div class="header-meta">
+      <div class="meta-item">SECTION <span>Projects</span></div>
+      <div class="meta-item">STATUS <span style="color:var(--amber)">● IN PROGRESS</span></div>
+    </div>
+  </header>
+
+  <nav>
+    <a href="index.html">Home</a>
+    <a href="projects.html" class="active">Projects</a>
+    <a href="guides.html">Guides</a>
+    <a href="news.html">News</a>
+    <a href="about.html">About</a>
+  </nav>
+
+  <main>
+
+    <!-- BUILD LOGS -->
+    <div class="section" id="builds">
+      <div class="section-head">
+        <div class="sec-num">01</div>
+        <h2>Build Logs</h2>
+      </div>
+      <div class="build-grid">
+
+        <a href="#" class="build-card">
+          <div class="card-top">
+            <div class="card-tag">Chapter 01 // Network</div>
+            <div class="card-title">Home Network Overhaul</div>
+            <div class="card-date">2025 — In Progress</div>
+          </div>
+          <div class="card-body">
+            <div class="card-desc">GL.iNet Flint 3 router, Minisforum UN100P running Proxmox, Technitium DNS, Nginx Proxy Manager, Home Assistant, and wall-mounted enclosure at the fiber entry point.</div>
+          </div>
+          <div class="card-footer">
+            <div class="card-status"><span class="dot pending"></span><span style="font-family:var(--mono);font-size:10px;color:var(--amber);letter-spacing:0.1em">IN PROGRESS</span></div>
+            <span class="card-arrow">→</span>
+          </div>
+        </a>
+
+        <a href="#" class="build-card">
+          <div class="card-top">
+            <div class="card-tag">Chapter 02 // Homelab</div>
+            <div class="card-title">3-Machine Proxmox Lab</div>
+            <div class="card-date">2025 — Planning</div>
+          </div>
+          <div class="card-body">
+            <div class="card-desc">HP Mini 800 G6 running Ubuntu Server + Windows 11 VMs, Lenovo P340 Tiny as Unraid NAS, Dell OptiPlex 7080 Micro as Proxmox Backup Server. 8U + 3U rack setup.</div>
+          </div>
+          <div class="card-footer">
+            <div class="card-status"><span class="dot pending"></span><span style="font-family:var(--mono);font-size:10px;color:var(--amber);letter-spacing:0.1em">PLANNING</span></div>
+            <span class="card-arrow">→</span>
+          </div>
+        </a>
+
+        <a href="#" class="build-card">
+          <div class="card-top">
+            <div class="card-tag">Chapter 03 // Physical</div>
+            <div class="card-title">Rack Build &amp; Cable Runs</div>
+            <div class="card-date">2025 — Planning</div>
+          </div>
+          <div class="card-body">
+            <div class="card-desc">10" rack build with 3D printed components including keystone patch panel, HDD enclosures, and custom 1U disc drive holder. Cat6a runs through attic to office.</div>
+          </div>
+          <div class="card-footer">
+            <div class="card-status"><span class="dot offline"></span><span style="font-family:var(--mono);font-size:10px;color:var(--text-dim);letter-spacing:0.1em">PENDING</span></div>
+            <span class="card-arrow">→</span>
+          </div>
+        </a>
+
+        <a href="#" class="build-card">
+          <div class="card-top">
+            <div class="card-tag">Side Project // Media</div>
+            <div class="card-title">CD/Blu-ray Ripping Station</div>
+            <div class="card-date">2025 — Planning</div>
+          </div>
+          <div class="card-body">
+            <div class="card-desc">dBpoweramp on Windows 11 VM with USB optical drive passthrough. FLAC library served via Navidrome, integrated into Home Assistant via Music Assistant.</div>
+          </div>
+          <div class="card-footer">
+            <div class="card-status"><span class="dot offline"></span><span style="font-family:var(--mono);font-size:10px;color:var(--text-dim);letter-spacing:0.1em">PENDING</span></div>
+            <span class="card-arrow">→</span>
+          </div>
+        </a>
+
+        <a href="#" class="build-card">
+          <div class="card-top">
+            <div class="card-tag">Side Project // 3D Printing</div>
+            <div class="card-title">Rack 3D Print Library</div>
+            <div class="card-date">2025 — Ongoing</div>
+          </div>
+          <div class="card-body">
+            <div class="card-desc">Custom 3D printed rack components: 2-bay HDD enclosures, 1U optical drive holder, keystone patch panel blanks, and cable management clips. All designed for the 10" rack.</div>
+          </div>
+          <div class="card-footer">
+            <div class="card-status"><span class="dot pending"></span><span style="font-family:var(--mono);font-size:10px;color:var(--amber);letter-spacing:0.1em">ONGOING</span></div>
+            <span class="card-arrow">→</span>
+          </div>
+        </a>
+
+        <a href="#" class="build-card">
+          <div class="card-top">
+            <div class="card-tag">Service // For Hire</div>
+            <div class="card-title">Personal Server Setup</div>
+            <div class="card-date">Open for requests</div>
+          </div>
+          <div class="card-body">
+            <div class="card-desc">Full home server setup for clients — Jellyfin, Immich, Navidrome, and more. Installed, configured, and running on your hardware. No jargon. No judgment. Just results.</div>
+          </div>
+          <div class="card-footer">
+            <div class="card-status"><span class="dot online"></span><span style="font-family:var(--mono);font-size:10px;color:var(--green);letter-spacing:0.1em">AVAILABLE</span></div>
+            <span class="card-arrow">→</span>
+          </div>
+        </a>
+
+      </div>
+    </div>
+
+    <!-- HARDWARE DOCS -->
+    <div class="section" id="hardware">
+      <div class="section-head">
+        <div class="sec-num">02</div>
+        <h2>Hardware Documentation</h2>
+      </div>
+      <div class="hw-grid">
+
+        <div class="hw-card">
+          <div class="hw-card-label">Network // Primary</div>
+          <div class="hw-card-name">Minisforum UN100P</div>
+          <div class="hw-spec"><span class="hw-spec-key">CPU</span><span class="hw-spec-val">Intel N100</span></div>
+          <div class="hw-spec"><span class="hw-spec-key">Role</span><span class="hw-spec-val">Network Infra</span></div>
+          <div class="hw-spec"><span class="hw-spec-key">Hypervisor</span><span class="hw-spec-val">Proxmox VE</span></div>
+          <div class="hw-spec"><span class="hw-spec-key">Boot</span><span class="hw-spec-val">NVMe</span></div>
+          <div class="hw-spec"><span class="hw-spec-key">Music SSD</span><span class="hw-spec-val">2TB SATA</span></div>
+          <div class="hw-spec"><span class="hw-spec-key">IP</span><span class="hw-spec-val">10.0.7.2</span></div>
+        </div>
+
+        <div class="hw-card">
+          <div class="hw-card-label">Homelab // Compute</div>
+          <div class="hw-card-name">HP Mini 800 G6</div>
+          <div class="hw-spec"><span class="hw-spec-key">RAM</span><span class="hw-spec-val">32GB DDR4</span></div>
+          <div class="hw-spec"><span class="hw-spec-key">Role</span><span class="hw-spec-val">Proxmox Host</span></div>
+          <div class="hw-spec"><span class="hw-spec-key">VM 101</span><span class="hw-spec-val">Ubuntu Server</span></div>
+          <div class="hw-spec"><span class="hw-spec-key">VM 102</span><span class="hw-spec-val">Windows 11</span></div>
+          <div class="hw-spec"><span class="hw-spec-key">iGPU</span><span class="hw-spec-val">Windows VM</span></div>
+          <div class="hw-spec"><span class="hw-spec-key">IP</span><span class="hw-spec-val">10.0.7.30</span></div>
+        </div>
+
+        <div class="hw-card">
+          <div class="hw-card-label">Homelab // NAS</div>
+          <div class="hw-card-name">Lenovo P340 Tiny</div>
+          <div class="hw-spec"><span class="hw-spec-key">Role</span><span class="hw-spec-val">NAS + Media</span></div>
+          <div class="hw-spec"><span class="hw-spec-key">OS</span><span class="hw-spec-val">Unraid</span></div>
+          <div class="hw-spec"><span class="hw-spec-key">NIC</span><span class="hw-spec-val">2.5GbE A+E</span></div>
+          <div class="hw-spec"><span class="hw-spec-key">Array</span><span class="hw-spec-val">6×18TB + Parity</span></div>
+          <div class="hw-spec"><span class="hw-spec-key">Cache</span><span class="hw-spec-val">2TB SSD</span></div>
+          <div class="hw-spec"><span class="hw-spec-key">IP</span><span class="hw-spec-val">10.0.7.20</span></div>
+        </div>
+
+        <div class="hw-card">
+          <div class="hw-card-label">Homelab // Backup</div>
+          <div class="hw-card-name">Dell OptiPlex 7080</div>
+          <div class="hw-spec"><span class="hw-spec-key">CPU</span><span class="hw-spec-val">i5-10500</span></div>
+          <div class="hw-spec"><span class="hw-spec-key">Role</span><span class="hw-spec-val">Proxmox Backup</span></div>
+          <div class="hw-spec"><span class="hw-spec-key">OS</span><span class="hw-spec-val">PBS 4.1</span></div>
+          <div class="hw-spec"><span class="hw-spec-key">Boot</span><span class="hw-spec-val">NVMe</span></div>
+          <div class="hw-spec"><span class="hw-spec-key">Backup</span><span class="hw-spec-val">5TB HDD</span></div>
+          <div class="hw-spec"><span class="hw-spec-key">IP</span><span class="hw-spec-val">10.0.7.33</span></div>
+        </div>
+
+        <div class="hw-card">
+          <div class="hw-card-label">Network // Router</div>
+          <div class="hw-card-name">GL.iNet Flint 3</div>
+          <div class="hw-spec"><span class="hw-spec-key">WiFi</span><span class="hw-spec-val">Wi-Fi 7 MLO</span></div>
+          <div class="hw-spec"><span class="hw-spec-key">SSID</span><span class="hw-spec-val">ashinghurst</span></div>
+          <div class="hw-spec"><span class="hw-spec-key">Subnet</span><span class="hw-spec-val">10.0.7.x /24</span></div>
+          <div class="hw-spec"><span class="hw-spec-key">Firmware</span><span class="hw-spec-val">OpenWrt</span></div>
+          <div class="hw-spec"><span class="hw-spec-key">IP</span><span class="hw-spec-val">10.0.7.1</span></div>
+        </div>
+
+        <div class="hw-card">
+          <div class="hw-card-label">3D Printing</div>
+          <div class="hw-card-name">Bambu Labs P1S</div>
+          <div class="hw-spec"><span class="hw-spec-key">Type</span><span class="hw-spec-val">CoreXY</span></div>
+          <div class="hw-spec"><span class="hw-spec-key">AMS</span><span class="hw-spec-val">Yes</span></div>
+          <div class="hw-spec"><span class="hw-spec-key">Slicer</span><span class="hw-spec-val">OrcaSlicer</span></div>
+          <div class="hw-spec"><span class="hw-spec-key">Library</span><span class="hw-spec-val">Manyfold</span></div>
+          <div class="hw-spec"><span class="hw-spec-key">Control</span><span class="hw-spec-val">Bambu LAN</span></div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- TRADE PROGRAM -->
+    <div class="section" id="trade">
+      <div class="section-head">
+        <div class="sec-num">03</div>
+        <h2>Trade-for-Tech Program</h2>
+      </div>
+      <div class="callout">
+        <div class="callout-label">// How It Works</div>
+        Got old hardware gathering dust? I'll take laptops, desktops, drives, and networking gear in trade for computer work or a full personal server setup. Your old machine gets a second life instead of a landfill.
+      </div>
+      <div class="hw-grid" style="margin-top:16px;">
+        <div class="hw-card">
+          <div class="hw-card-label">Accepted in Trade</div>
+          <div class="hw-card-name">What I'll Take</div>
+          <div class="hw-spec"><span class="hw-spec-key">Laptops</span><span class="hw-spec-val">Any age, any condition</span></div>
+          <div class="hw-spec"><span class="hw-spec-key">Desktops / Towers</span><span class="hw-spec-val">Even old Pentiums</span></div>
+          <div class="hw-spec"><span class="hw-spec-key">Hard Drives</span><span class="hw-spec-val">HDDs and SSDs</span></div>
+          <div class="hw-spec"><span class="hw-spec-key">Networking Gear</span><span class="hw-spec-val">Routers, switches, APs</span></div>
+          <div class="hw-spec"><span class="hw-spec-key">RAM / Components</span><span class="hw-spec-val">Always useful</span></div>
+          <div class="hw-spec"><span class="hw-spec-key">Peripherals</span><span class="hw-spec-val">Monitors, keyboards, mice</span></div>
+        </div>
+        <div class="hw-card">
+          <div class="hw-card-label">Services Available</div>
+          <div class="hw-card-name">What You Get</div>
+          <div class="hw-spec"><span class="hw-spec-key">Media Server</span><span class="hw-spec-val">Jellyfin + Navidrome</span></div>
+          <div class="hw-spec"><span class="hw-spec-key">Photo Backup</span><span class="hw-spec-val">Immich setup</span></div>
+          <div class="hw-spec"><span class="hw-spec-key">Computer Repair</span><span class="hw-spec-val">Cleanup + upgrades</span></div>
+          <div class="hw-spec"><span class="hw-spec-key">Network Setup</span><span class="hw-spec-val">Secure DNS + VPN</span></div>
+          <div class="hw-spec"><span class="hw-spec-key">Data Recovery</span><span class="hw-spec-val">Drives + cloud exit</span></div>
+          <div class="hw-spec"><span class="hw-spec-key">Custom Builds</span><span class="hw-spec-val">Whatever you need</span></div>
+        </div>
+      </div>
+      <div class="btn-row">
+        <a href="about.html#contact" class="btn primary">Get In Touch</a>
+        <a href="guides.html" class="btn">Browse Guides</a>
+      </div>
+    </div>
+
+  </main>
+
+  <footer>
+    <span>THEWASTELANDER.COM // BUILD DOCUMENTATION // ALL RIGHTS RESERVED</span>
+    <span><a href="#">↑ Top</a></span>
+  </footer>
+
+  <script>
+    document.querySelectorAll('.section').forEach((el, i) => {
+      el.style.animationDelay = (i * 0.08) + 's';
+    });
+    const sections = document.querySelectorAll('.section');
+    const navLinks = document.querySelectorAll('nav a');
+    const observer = new IntersectionObserver(entries => {
+      entries.forEach(e => {
+        if (e.isIntersecting) {
+          navLinks.forEach(a => { if (!a.classList.contains('active') || a.href.includes('projects')) a.classList.remove('active'); });
+        }
+      });
+    }, { threshold: 0.3 });
+    sections.forEach(s => observer.observe(s));
+  </script>
+
+</body>
+</html>

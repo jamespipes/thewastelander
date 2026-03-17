@@ -1,0 +1,510 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Disc Ripping Field Manual // The Wastelander</title>
+  <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Oswald:wght@300;400;600;700&family=Source+Serif+4:ital,wght@0,300;0,400;1,300&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --amber: #e8a020;
+      --amber-dim: #a86e10;
+      --amber-glow: #ffbe44;
+      --green: #4ade80;
+      --green-dim: #22863a;
+      --red: #ef4444;
+      --bg: #0a0905;
+      --bg-panel: #100e08;
+      --bg-raised: #161209;
+      --border: #2a2218;
+      --border-lit: #4a3a20;
+      --text: #c8a870;
+      --text-dim: #7a6040;
+      --text-bright: #f0d090;
+      --mono: 'Share Tech Mono', monospace;
+      --display: 'Oswald', sans-serif;
+      --serif: 'Source Serif 4', serif;
+    }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body {
+      background-color: var(--bg);
+      color: var(--text);
+      font-family: var(--serif);
+      font-weight: 300;
+      font-size: 16px;
+      line-height: 1.7;
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+    body::before {
+      content: '';
+      position: fixed; inset: 0;
+      background: repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0,0,0,0.08) 2px, rgba(0,0,0,0.08) 4px);
+      pointer-events: none; z-index: 9999;
+    }
+    body::after {
+      content: '';
+      position: fixed; inset: 0;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
+      pointer-events: none; z-index: 9998; opacity: 0.4;
+    }
+    header {
+      position: relative;
+      border-bottom: 1px solid var(--border-lit);
+      background: linear-gradient(180deg, #1a1408 0%, var(--bg) 100%);
+      overflow: hidden;
+    }
+    .tape {
+      background: var(--amber); color: var(--bg);
+      font-family: var(--mono); font-size: 11px; letter-spacing: 0.15em;
+      padding: 5px 40px; display: flex; justify-content: space-between;
+      align-items: center;
+    }
+    .tape .blink { animation: blink 1.2s step-end infinite; }
+    .header-tape {
+      background: var(--amber); color: var(--bg);
+      font-family: var(--mono); font-size: 11px; letter-spacing: 0.15em;
+      padding: 5px 24px; display: flex; justify-content: space-between; align-items: center;
+    }
+    .header-tape .blink { animation: blink 1.2s step-end infinite; }
+    @keyframes blink { 0%,100%{opacity:1}50%{opacity:0} }
+    .header-main {
+      padding: 40px 48px 36px;
+      display: grid; grid-template-columns: 1fr auto; align-items: end; gap: 24px;
+    }
+    .site-eyebrow {
+      font-family: var(--mono); font-size: 11px; letter-spacing: 0.3em;
+      color: var(--amber-dim); text-transform: uppercase; margin-bottom: 12px;
+    }
+    h1 {
+      font-family: var(--display); font-weight: 700;
+      font-size: clamp(2.4rem, 5vw, 4rem);
+      line-height: 1; letter-spacing: 0.05em; text-transform: uppercase;
+      color: var(--amber-glow);
+      text-shadow: 0 0 40px rgba(232,160,32,0.3), 0 0 80px rgba(232,160,32,0.1);
+    }
+    h1 span {
+      color: var(--text-dim); font-weight: 300; font-size: 0.55em;
+      display: block; letter-spacing: 0.2em; margin-top: 6px;
+    }
+    .header-badge {
+      font-family: var(--mono); font-size: 10px; color: var(--amber-dim);
+      text-align: right; line-height: 1.8;
+      border: 1px solid var(--border-lit); padding: 12px 16px; background: var(--bg-panel);
+    }
+    .header-badge .badge-val { color: var(--amber); font-size: 12px; }
+    nav {
+      background: var(--bg-panel); border-bottom: 1px solid var(--border);
+      padding: 0 48px; display: flex; gap: 0; overflow-x: auto;
+      position: sticky; top: 0; z-index: 100;
+    }
+    nav a {
+      font-family: var(--mono); font-size: 11px; letter-spacing: 0.12em;
+      text-transform: uppercase; color: var(--text-dim); text-decoration: none;
+      padding: 14px 20px; border-right: 1px solid var(--border); white-space: nowrap;
+      transition: color 0.2s, background 0.2s;
+    }
+    nav a:first-child { border-left: 1px solid var(--border); }
+    nav a:hover { color: var(--amber); background: rgba(232,160,32,0.05); }
+    main { max-width: 960px; margin: 0 auto; padding: 56px 48px 80px; }
+    .section { margin-bottom: 64px; animation: fadeUp 0.5s ease both; }
+    @keyframes fadeUp { from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)} }
+    .section-header {
+      display: flex; align-items: center; gap: 16px;
+      margin-bottom: 28px; padding-bottom: 12px; border-bottom: 1px solid var(--border-lit);
+    }
+    .section-num {
+      font-family: var(--mono); font-size: 11px; color: var(--amber-dim);
+      background: var(--bg-panel); border: 1px solid var(--border-lit);
+      padding: 4px 10px; letter-spacing: 0.1em; flex-shrink: 0;
+    }
+    h2 { font-family: var(--display); font-weight: 600; font-size: 1.5rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--text-bright); }
+    h3 { font-family: var(--display); font-weight: 400; font-size: 1.1rem; letter-spacing: 0.12em; text-transform: uppercase; color: var(--amber); margin: 28px 0 12px; }
+    p { margin-bottom: 14px; color: var(--text); }
+    .steps { counter-reset: step; display: flex; flex-direction: column; gap: 4px; }
+    .step {
+      counter-increment: step;
+      display: grid; grid-template-columns: 48px 1fr;
+      background: var(--bg-panel); border: 1px solid var(--border);
+      transition: border-color 0.2s, background 0.2s;
+    }
+    .step:hover { border-color: var(--border-lit); background: var(--bg-raised); }
+    .step::before {
+      content: counter(step, decimal-leading-zero);
+      font-family: var(--mono); font-size: 13px; color: var(--amber-dim);
+      display: flex; align-items: flex-start; justify-content: center;
+      padding-top: 18px; border-right: 1px solid var(--border); background: rgba(0,0,0,0.2);
+    }
+    .step-body { padding: 16px 20px; }
+    .step-title { font-family: var(--display); font-weight: 600; font-size: 0.95rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--text-bright); margin-bottom: 6px; }
+    .step-body p { margin-bottom: 6px; font-size: 0.92rem; }
+    .step-body p:last-child { margin-bottom: 0; }
+    .settings-grid { border: 1px solid var(--border-lit); overflow: hidden; margin: 20px 0; }
+    .settings-grid-header {
+      background: rgba(232,160,32,0.12); padding: 10px 16px;
+      font-family: var(--mono); font-size: 11px; letter-spacing: 0.2em; text-transform: uppercase;
+      color: var(--amber); border-bottom: 1px solid var(--border-lit);
+      display: flex; align-items: center; gap: 10px;
+    }
+    .settings-grid-header::before { content: '▶'; font-size: 8px; }
+    table { width: 100%; border-collapse: collapse; font-size: 0.875rem; }
+    th { font-family: var(--mono); font-size: 10px; letter-spacing: 0.15em; text-transform: uppercase; color: var(--text-dim); padding: 8px 16px; text-align: left; background: var(--bg-panel); border-bottom: 1px solid var(--border); }
+    td { padding: 10px 16px; border-bottom: 1px solid var(--border); vertical-align: top; }
+    tr:last-child td { border-bottom: none; }
+    tr:nth-child(even) td { background: rgba(0,0,0,0.15); }
+    .td-label { font-family: var(--mono); font-size: 12px; color: var(--amber-dim); white-space: nowrap; width: 35%; }
+    .td-val { color: var(--text-bright); font-weight: 400; }
+    .td-note { color: var(--text-dim); font-size: 0.8rem; font-style: italic; }
+    .callout { border-left: 3px solid var(--amber); background: rgba(232,160,32,0.05); padding: 14px 18px; margin: 20px 0; font-size: 0.875rem; }
+    .callout.warn { border-left-color: var(--red); background: rgba(239,68,68,0.05); }
+    .callout.tip { border-left-color: var(--green); background: rgba(74,222,128,0.05); }
+    .callout-label { font-family: var(--mono); font-size: 10px; letter-spacing: 0.2em; text-transform: uppercase; margin-bottom: 6px; }
+    .callout-label.warn { color: var(--red); }
+    .callout-label.tip { color: var(--green); }
+    .callout-label.info { color: var(--amber); }
+    code { font-family: var(--mono); font-size: 0.82em; background: var(--bg-panel); border: 1px solid var(--border); padding: 2px 6px; color: var(--amber-glow); }
+    .format-tabs { display: flex; gap: 0; margin-bottom: -1px; position: relative; z-index: 1; }
+    .format-tab { font-family: var(--mono); font-size: 11px; letter-spacing: 0.15em; text-transform: uppercase; padding: 10px 24px; cursor: pointer; border: 1px solid var(--border); background: var(--bg-panel); color: var(--text-dim); transition: all 0.15s; user-select: none; }
+    .format-tab.active { color: var(--amber); border-bottom-color: var(--bg-raised); background: var(--bg-raised); }
+    .format-tab:hover:not(.active) { color: var(--text); background: var(--bg-raised); }
+    .format-panel { display: none; border: 1px solid var(--border); background: var(--bg-raised); padding: 24px; }
+    .format-panel.active { display: block; }
+    .subtitle-flow { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1px; background: var(--border); border: 1px solid var(--border-lit); margin: 20px 0; }
+    .flow-step { background: var(--bg-panel); padding: 20px 16px; text-align: center; }
+    .flow-step-num { font-family: var(--mono); font-size: 10px; color: var(--amber-dim); letter-spacing: 0.2em; margin-bottom: 8px; }
+    .flow-step-label { font-family: var(--display); font-weight: 600; font-size: 0.85rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--text-bright); margin-bottom: 6px; }
+    .flow-step-desc { font-size: 0.8rem; color: var(--text-dim); }
+    footer { border-top: 1px solid var(--border); padding: 28px 48px; font-family: var(--mono); font-size: 10px; letter-spacing: 0.15em; color: var(--text-dim); display: flex; justify-content: space-between; align-items: center; gap: 16px; flex-wrap: wrap; }
+    footer a { color: var(--amber-dim); text-decoration: none; }
+    footer a:hover { color: var(--amber); }
+    @media (max-width: 640px) { .header-main { padding: 28px 24px 24px; grid-template-columns: 1fr; } nav { padding: 0 24px; } main { padding: 36px 24px 60px; } footer { padding: 20px 24px; } .header-badge { display: none; } }
+  </style>
+</head>
+<body>
+
+  <div class="tape">
+    <span>THEWASTELANDER.COM // BUILD DOCUMENTATION</span>
+    <span class="blink">● TRANSMITTING</span>
+  </div>
+
+  <header>
+    <div class="header-tape">
+      <span>THEWASTELANDER.COM // FIELD MANUAL SERIES</span>
+      <span class="blink">● OPERATIONAL</span>
+    </div>
+    <div class="header-main">
+      <div>
+        <div class="site-eyebrow">Field Manual № 07 — Media Salvage Operations</div>
+        <h1>Disc Ripping Guide<span>LG BP60NB60 // Windows 11 // x265 MKV</span></h1>
+      </div>
+      <div class="header-badge">
+        HARDWARE<br><span class="badge-val">LG BP60NB60</span><br>
+        ENCODE<br><span class="badge-val">x265 / MKV</span><br>
+        SUBTITLES<br><span class="badge-val">ENG SRT</span><br>
+        REVISED<br><span class="badge-val">2025</span>
+      </div>
+    </div>
+  </header>
+
+  <nav>
+    <a href="index.html">Home</a>
+    <a href="projects.html">Projects</a>
+    <a href="guides.html">Guides</a>
+    <a href="news.html" class="active">News</a>
+    <a href="about.html">About</a>
+    <a href="#software" style="border-left:1px solid var(--border-lit);margin-left:8px;">Software</a>
+    <a href="#makemkv">MakeMKV</a>
+    <a href="#handbrake">HandBrake</a>
+    <a href="#subtitles">Subtitles</a>
+    <a href="#workflow">Workflow</a>
+    <a href="#reference">Reference</a>
+  </nav>
+
+  <main>
+
+    <div class="section" style="animation-delay:0.05s">
+      <p>This guide covers the complete setup for ripping DVD and Blu-ray discs using the <strong>LG BP60NB60</strong> external drive on Windows 11. The workflow uses a two-stage process: <strong>MakeMKV</strong> for lossless extraction and <strong>HandBrake</strong> for x265 compression, producing universally compatible MKV files with English subtitles saved as external <code>.srt</code> files. Your drive is already passed through and recognized by Windows — pick up from software installation.</p>
+      <div class="callout">
+        <div class="callout-label info">Workflow Overview</div>
+        Disc → MakeMKV (lossless .mkv + subtitle extraction) → BDSup2Sub (PGS→SRT conversion) → HandBrake (x265 encode) → Final .mkv + .en.srt
+      </div>
+    </div>
+
+    <div class="section" id="software" style="animation-delay:0.1s">
+      <div class="section-header"><div class="section-num">01</div><h2>Software Installation</h2></div>
+      <p>Three tools are required. Install all three before proceeding.</p>
+      <div class="steps">
+        <div class="step"><div class="step-body"><div class="step-title">Install MakeMKV</div><p>Download the Windows installer from <strong>makemkv.com</strong>. During install, accept defaults. MakeMKV is technically in "beta" but has been continuously maintained for years — a free registration key is posted monthly on the MakeMKV forum. Bookmark the forum thread for key renewal.</p></div></div>
+        <div class="step"><div class="step-body"><div class="step-title">Install HandBrake</div><p>Download the Windows 64-bit installer from <strong>handbrake.fr</strong>. Run the installer with defaults. No license key required — HandBrake is fully open source.</p></div></div>
+        <div class="step"><div class="step-body"><div class="step-title">Install BDSup2Sub++</div><p>Download from GitHub (<strong>github.com/amtoph/BDSup2Sub</strong>). This converts Blu-ray PGS image-based subtitles into text-based <code>.srt</code> files. Extract the <code>.jar</code> to a permanent folder (e.g. <code>C:\Tools\BDSup2Sub</code>). Requires Java — install <strong>Adoptium Temurin JRE 21</strong> from adoptium.net if Java is not already present.</p></div></div>
+      </div>
+    </div>
+
+    <div class="section" id="makemkv" style="animation-delay:0.15s">
+      <div class="section-header"><div class="section-num">02</div><h2>MakeMKV Configuration</h2></div>
+      <p>MakeMKV handles disc decryption and lossless extraction. Configure it once and it applies to all future rips.</p>
+      <h3>Register Your Key</h3>
+      <div class="steps">
+        <div class="step"><div class="step-body"><div class="step-title">Enter the Beta Key</div><p>Open MakeMKV → <strong>Help → Register</strong>. Paste the current beta key from the MakeMKV forum (forum.makemkv.com, pinned post). Keys expire monthly — bookmark the thread. Without a valid key, MakeMKV works for 30 days then requires renewal.</p></div></div>
+      </div>
+      <h3>Output Settings</h3>
+      <div class="steps">
+        <div class="step"><div class="step-body"><div class="step-title">Set Output Folder</div><p>Go to <strong>File → Preferences → General</strong>. Set <strong>Default output folder</strong> to a staging location with ample space — e.g. <code>D:\Rips\Staging</code>. Blu-ray rips average 20–40 GB each before encoding.</p></div></div>
+        <div class="step"><div class="step-body"><div class="step-title">Configure Track Selection Defaults</div><p>Go to <strong>File → Preferences → Advanced</strong>. Set the following to control which tracks are automatically selected during rip:</p></div></div>
+      </div>
+      <div class="settings-grid">
+        <div class="settings-grid-header">MakeMKV — Advanced Preferences</div>
+        <table>
+          <thead><tr><th>Setting</th><th>Value</th><th>Notes</th></tr></thead>
+          <tbody>
+            <tr><td class="td-label">Default selection rule</td><td class="td-val"><code>+sel:all,+sel:lang(eng),-sel:lang(und)</code></td><td class="td-note">Selects all English tracks, deselects undetermined languages</td></tr>
+            <tr><td class="td-label">Expert mode</td><td class="td-val">Enabled</td><td class="td-note">Reveals additional track detail and options</td></tr>
+            <tr><td class="td-label">Create chapter file</td><td class="td-val">Enabled</td><td class="td-note">Preserves chapter markers in output MKV</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <h3>Track Selection During Rip</h3>
+      <p>When you open a disc, MakeMKV shows all available tracks. For each rip, verify the following are checked before clicking <strong>Make MKV</strong>:</p>
+      <div class="settings-grid">
+        <div class="settings-grid-header">Track Checklist — What to Keep</div>
+        <table>
+          <thead><tr><th>Track Type</th><th>Keep</th><th>Reason</th></tr></thead>
+          <tbody>
+            <tr><td class="td-label">Main video</td><td class="td-val">✓ Yes</td><td class="td-note">The primary 1080p or 480p video stream</td></tr>
+            <tr><td class="td-label">TrueHD / DTS-HD MA audio (ENG)</td><td class="td-val">✓ Yes</td><td class="td-note">Lossless audio — preserved for HandBrake to process</td></tr>
+            <tr><td class="td-label">AC-3 / DTS core (ENG)</td><td class="td-val">✓ Yes</td><td class="td-note">Lossy surround fallback — useful to keep</td></tr>
+            <tr><td class="td-label">PGS subtitles (ENG)</td><td class="td-val">✓ Yes</td><td class="td-note">Required for SRT conversion step</td></tr>
+            <tr><td class="td-label">Commentary audio tracks</td><td class="td-val">Optional</td><td class="td-note">Skip unless you want them — saves space</td></tr>
+            <tr><td class="td-label">Non-English audio / subtitles</td><td class="td-val">✗ No</td><td class="td-note">Skip unless needed</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="callout tip"><div class="callout-label tip">Tip</div>After ripping, the output MKV is full-size and lossless. Do not delete it until the HandBrake encode is verified complete and correct.</div>
+    </div>
+
+    <div class="section" id="handbrake" style="animation-delay:0.2s">
+      <div class="section-header"><div class="section-num">03</div><h2>HandBrake — Creating a Custom Preset</h2></div>
+      <p>Rather than configuring settings per-rip, create two saved presets — one for Blu-ray (1080p) and one for DVD (480p). HandBrake will then detect and apply the correct settings automatically based on the source.</p>
+      <h3>Create the Blu-ray Preset First</h3>
+      <div class="steps">
+        <div class="step"><div class="step-body"><div class="step-title">Open a Source File</div><p>Drag your lossless MakeMKV output into HandBrake or use <strong>File → Open Source</strong>. HandBrake needs an active source to save a preset — load any MKV. Select the main title (longest duration) from the title dropdown.</p></div></div>
+        <div class="step"><div class="step-body"><div class="step-title">Configure the Summary Tab</div><p>Set <strong>Format</strong> to <code>MKV File</code>. Ensure <strong>Web Optimized</strong> is unchecked. Leave <strong>Align A/V Start</strong> checked.</p></div></div>
+        <div class="step"><div class="step-body"><div class="step-title">Configure the Dimensions Tab</div><p>Set <strong>Cropping</strong> to <code>Automatic</code>. Set <strong>Resolution Limit</strong> to <code>None</code> for Blu-ray. Anamorphic: <code>Automatic</code>.</p></div></div>
+        <div class="step"><div class="step-body"><div class="step-title">Configure the Filters Tab</div><p>For Blu-ray: set <strong>Deinterlace</strong> to <code>Off</code> — Blu-ray content is progressive. Leave all other filters off.</p></div></div>
+        <div class="step"><div class="step-body"><div class="step-title">Configure the Video Tab</div><p>Apply the settings from the table below. These are the most critical quality settings.</p></div></div>
+      </div>
+
+      <div class="format-tabs">
+        <div class="format-tab active" onclick="switchTab(this, 'bluray')">Blu-ray 1080p</div>
+        <div class="format-tab" onclick="switchTab(this, 'dvd')">DVD 480p</div>
+      </div>
+
+      <div class="format-panel active" id="panel-bluray">
+        <div class="settings-grid">
+          <div class="settings-grid-header">Video Tab — Blu-ray Preset</div>
+          <table>
+            <thead><tr><th>Setting</th><th>Value</th><th>Notes</th></tr></thead>
+            <tbody>
+              <tr><td class="td-label">Video Codec</td><td class="td-val">H.265 (x265)</td><td class="td-note">Software encode — best quality/size ratio</td></tr>
+              <tr><td class="td-label">Framerate</td><td class="td-val">Same as source</td><td class="td-note">Do not force a framerate</td></tr>
+              <tr><td class="td-label">Framerate mode</td><td class="td-val">Constant Framerate (CFR)</td><td class="td-note">Better compatibility than VFR</td></tr>
+              <tr><td class="td-label">Quality mode</td><td class="td-val">Constant Quality (RF)</td><td class="td-note">RF = Rate Factor; lower = better quality</td></tr>
+              <tr><td class="td-label">RF Value</td><td class="td-val"><strong>22</strong></td><td class="td-note">Excellent quality; try 20 for archival</td></tr>
+              <tr><td class="td-label">Encoder Preset</td><td class="td-val">Medium</td><td class="td-note">Slower = smaller file; Medium is the sweet spot</td></tr>
+              <tr><td class="td-label">Encoder Tune</td><td class="td-val">None</td><td class="td-note">Leave default</td></tr>
+              <tr><td class="td-label">Encoder Profile</td><td class="td-val">Main 10</td><td class="td-note">Required for HDR if ever needed; fine for SDR</td></tr>
+              <tr><td class="td-label">Level</td><td class="td-val">Auto</td><td class="td-note"></td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="settings-grid">
+          <div class="settings-grid-header">Audio Tab — Blu-ray Preset</div>
+          <table>
+            <thead><tr><th>Track</th><th>Codec</th><th>Mixdown</th><th>Bitrate</th><th>Notes</th></tr></thead>
+            <tbody>
+              <tr><td class="td-label">Track 1</td><td class="td-val">AAC (FDK)</td><td class="td-val">Stereo</td><td class="td-val">192 kbps</td><td class="td-note">Universal compatibility</td></tr>
+              <tr><td class="td-label">Track 2</td><td class="td-val">AC3 Passthru</td><td class="td-val">—</td><td class="td-val">—</td><td class="td-note">5.1 surround passthrough</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="callout tip"><div class="callout-label tip">Audio Note — Blu-ray</div>If the source has TrueHD 7.1 but no AC3 track, set Track 2 codec to <code>AC3</code> (encode, not passthru) at 640 kbps, mixdown <code>5.1 Channels</code>.</div>
+        <div class="settings-grid">
+          <div class="settings-grid-header">Subtitles Tab — Blu-ray Preset</div>
+          <table>
+            <thead><tr><th>Setting</th><th>Value</th><th>Notes</th></tr></thead>
+            <tbody>
+              <tr><td class="td-label">Subtitle track</td><td class="td-val">None / leave empty</td><td class="td-note">Subtitles handled externally via BDSup2Sub — do not burn in</td></tr>
+              <tr><td class="td-label">Burn In</td><td class="td-val">Off</td><td class="td-note">External .srt is toggleable at playback</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="settings-grid">
+          <div class="settings-grid-header">Filters Tab — Blu-ray Preset</div>
+          <table>
+            <thead><tr><th>Filter</th><th>Value</th></tr></thead>
+            <tbody>
+              <tr><td class="td-label">Detelecine</td><td class="td-val">Off</td></tr>
+              <tr><td class="td-label">Interlace Detection</td><td class="td-val">Off</td></tr>
+              <tr><td class="td-label">Deinterlace</td><td class="td-val">Off</td></tr>
+              <tr><td class="td-label">Denoise</td><td class="td-val">Off</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="format-panel" id="panel-dvd">
+        <div class="settings-grid">
+          <div class="settings-grid-header">Video Tab — DVD Preset</div>
+          <table>
+            <thead><tr><th>Setting</th><th>Value</th><th>Notes</th></tr></thead>
+            <tbody>
+              <tr><td class="td-label">Video Codec</td><td class="td-val">H.265 (x265)</td><td class="td-note">x265 is very efficient at 480p</td></tr>
+              <tr><td class="td-label">Framerate</td><td class="td-val">Same as source</td><td class="td-note">NTSC = 29.97; PAL = 25</td></tr>
+              <tr><td class="td-label">Framerate mode</td><td class="td-val">Constant Framerate (CFR)</td><td class="td-note"></td></tr>
+              <tr><td class="td-label">Quality mode</td><td class="td-val">Constant Quality (RF)</td><td class="td-note"></td></tr>
+              <tr><td class="td-label">RF Value</td><td class="td-val"><strong>18–20</strong></td><td class="td-note">Lower RF needed — DVD source has less detail</td></tr>
+              <tr><td class="td-label">Encoder Preset</td><td class="td-val">Medium</td><td class="td-note"></td></tr>
+              <tr><td class="td-label">Resolution Limit</td><td class="td-val">None — keep native 480p</td><td class="td-note">Do not upscale</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="settings-grid">
+          <div class="settings-grid-header">Audio Tab — DVD Preset</div>
+          <table>
+            <thead><tr><th>Track</th><th>Codec</th><th>Mixdown</th><th>Bitrate</th><th>Notes</th></tr></thead>
+            <tbody>
+              <tr><td class="td-label">Track 1</td><td class="td-val">AAC (FDK)</td><td class="td-val">Stereo</td><td class="td-val">160 kbps</td><td class="td-note">Universal compatibility</td></tr>
+              <tr><td class="td-label">Track 2</td><td class="td-val">AC3 Passthru</td><td class="td-val">—</td><td class="td-val">—</td><td class="td-note">DVDs use native AC3 — perfect passthrough</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="settings-grid">
+          <div class="settings-grid-header">Filters Tab — DVD Preset (Critical Difference)</div>
+          <table>
+            <thead><tr><th>Filter</th><th>Value</th><th>Notes</th></tr></thead>
+            <tbody>
+              <tr><td class="td-label">Detelecine</td><td class="td-val"><strong>Default</strong></td><td class="td-note">Corrects 3:2 pulldown on film-sourced DVDs</td></tr>
+              <tr><td class="td-label">Interlace Detection</td><td class="td-val"><strong>Default</strong></td><td class="td-note">Automatically detects interlaced content</td></tr>
+              <tr><td class="td-label">Deinterlace</td><td class="td-val"><strong>Decomb — Default</strong></td><td class="td-note">Removes combing artifacts — essential for DVD</td></tr>
+              <tr><td class="td-label">Denoise</td><td class="td-val">Off</td><td class="td-note">Optional: NLMeans Light can help grainy DVDs</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="callout warn"><div class="callout-label warn">Warning — DVD Interlacing</div>Skipping Decomb on DVD sources will cause visible horizontal combing artifacts during motion. Always enable Interlace Detection + Decomb for DVD. Blu-ray does not require this.</div>
+      </div>
+
+      <h3>Save Presets</h3>
+      <div class="steps">
+        <div class="step"><div class="step-body"><div class="step-title">Save the Blu-ray Preset</div><p>After configuring all tabs for Blu-ray: <strong>Presets → Save New Preset</strong>. Name it <code>Wastelander-BD-x265</code>. Set Category to <code>Custom</code>. Click Add.</p></div></div>
+        <div class="step"><div class="step-body"><div class="step-title">Save the DVD Preset</div><p>Switch to the DVD settings (change RF to 18–20, enable Detelecine + Decomb). Save as <code>Wastelander-DVD-x265</code>. Both presets will appear in the Presets panel on every future launch.</p></div></div>
+      </div>
+    </div>
+
+    <div class="section" id="subtitles" style="animation-delay:0.25s">
+      <div class="section-header"><div class="section-num">04</div><h2>Subtitle Extraction — PGS to SRT</h2></div>
+      <p>Blu-ray subtitles are stored as PGS (Presentation Graphic Streams) — image-based graphics, not text. They must be OCR'd into text <code>.srt</code> format using BDSup2Sub++. DVD subtitles (VOB format) go through the same process.</p>
+      <div class="subtitle-flow">
+        <div class="flow-step"><div class="flow-step-num">STEP 01</div><div class="flow-step-label">MakeMKV Output</div><div class="flow-step-desc">Lossless .mkv containing embedded PGS subtitle track</div></div>
+        <div class="flow-step"><div class="flow-step-num">STEP 02</div><div class="flow-step-label">Extract PGS</div><div class="flow-step-desc">Use MKVToolNix to demux the subtitle track as a .sup file</div></div>
+        <div class="flow-step"><div class="flow-step-num">STEP 03</div><div class="flow-step-label">BDSup2Sub++ OCR</div><div class="flow-step-desc">Convert .sup to text-based .srt with OCR</div></div>
+        <div class="flow-step"><div class="flow-step-num">STEP 04</div><div class="flow-step-label">Place Alongside MKV</div><div class="flow-step-desc">Rename to match MKV filename as MovieName.en.srt</div></div>
+      </div>
+      <h3>Install MKVToolNix</h3>
+      <div class="steps">
+        <div class="step"><div class="step-body"><div class="step-title">Download and Install MKVToolNix</div><p>Download the Windows installer from <strong>mkvtoolnix.download</strong>. Install with defaults. Provides both MKVToolNix GUI and the command-line <code>mkvextract</code> tool.</p></div></div>
+      </div>
+      <h3>Extract the Subtitle Track</h3>
+      <div class="steps">
+        <div class="step"><div class="step-body"><div class="step-title">Identify the Subtitle Track Number</div><p>Open MKVToolNix GUI. Drag your lossless MakeMKV MKV onto the window. In the <strong>Tracks</strong> list, find the subtitle track labeled <code>subtitles</code> with language <code>eng</code> and codec <code>S_HDMV/PGS</code>. Note its track number (e.g. Track 3).</p></div></div>
+        <div class="step"><div class="step-body"><div class="step-title">Extract via mkvextract</div><p>Open Command Prompt and run:</p><p><code>mkvextract tracks "C:\Path\To\Movie.mkv" 3:subtitle.sup</code></p><p>Replace <code>3</code> with your subtitle track number. This produces a <code>subtitle.sup</code> file — the raw PGS stream.</p></div></div>
+      </div>
+      <h3>Convert PGS to SRT with BDSup2Sub++</h3>
+      <div class="steps">
+        <div class="step"><div class="step-body"><div class="step-title">Open BDSup2Sub++</div><p>Launch BDSup2Sub++ (double-click the <code>.jar</code>). Open your <code>subtitle.sup</code> file via <strong>File → Load</strong>.</p></div></div>
+        <div class="step"><div class="step-body"><div class="step-title">Set Output Format and Export</div><p>Set <strong>Output format</strong> to <code>SRT (SubRip)</code>. Set <strong>OCR mode</strong> to <code>Automatic OCR</code>. Click <strong>OK</strong>, then <strong>File → Save/Export</strong>. Name the output <code>Movie.Title.Year.en.srt</code>.</p></div></div>
+        <div class="step"><div class="step-body"><div class="step-title">Review and Correct the SRT</div><p>Scan in a text editor for OCR errors — common issues are <code>l</code> vs <code>1</code>, <code>O</code> vs <code>0</code>, and punctuation. Use <strong>Subtitle Edit</strong> (subtitleedit.org) for automated OCR error highlighting.</p></div></div>
+        <div class="step"><div class="step-body"><div class="step-title">Place SRT Alongside Final MKV</div><p>After HandBrake encoding, place the <code>.en.srt</code> in the same folder as the final <code>.mkv</code>. Jellyfin, Plex, Kodi, and VLC all auto-detect matching <code>.en.srt</code> files.</p></div></div>
+      </div>
+      <div class="callout tip"><div class="callout-label tip">Naming Convention</div>Use consistent naming: <code>Movie.Title.Year.mkv</code> and <code>Movie.Title.Year.en.srt</code>. Jellyfin and Plex use this pattern for automatic matching. For forced subtitles, also extract as <code>.en.forced.srt</code>.</div>
+    </div>
+
+    <div class="section" id="workflow" style="animation-delay:0.3s">
+      <div class="section-header"><div class="section-num">05</div><h2>Complete Ripping Workflow</h2></div>
+      <p>With software installed and presets saved, every future rip follows this sequence.</p>
+      <div class="steps">
+        <div class="step"><div class="step-body"><div class="step-title">Insert Disc — MakeMKV Detects Automatically</div><p>Insert the disc into the LG BP60NB60. Open MakeMKV. Click the disc icon to read the disc. Wait for the title list to populate (15–60 seconds).</p></div></div>
+        <div class="step"><div class="step-body"><div class="step-title">Select the Main Title and Tracks</div><p>The main feature is almost always the longest title. Verify: main video ✓, English audio ✓, English PGS subtitles ✓. Deselect extras, trailers, and non-English tracks.</p></div></div>
+        <div class="step"><div class="step-body"><div class="step-title">Rip to Staging Folder</div><p>Click <strong>Make MKV</strong>. Blu-ray rips take 20–60 minutes. DVD rips take 10–20 minutes. Output is a lossless MKV — typically 20–40 GB for Blu-ray, 4–8 GB for DVD.</p></div></div>
+        <div class="step"><div class="step-body"><div class="step-title">Extract and Convert PGS Subtitle Track</div><p>Using mkvextract, pull the English PGS subtitle track as <code>subtitle.sup</code>. Convert to <code>.en.srt</code> with BDSup2Sub++ as described in Section 04.</p></div></div>
+        <div class="step"><div class="step-body"><div class="step-title">Open in HandBrake — Select Correct Preset</div><p>Load the lossless MKV. Select:<br>→ <code>Wastelander-BD-x265</code> for Blu-ray<br>→ <code>Wastelander-DVD-x265</code> for DVD</p></div></div>
+        <div class="step"><div class="step-body"><div class="step-title">Set Output Filename and Location</div><p>Set output path to your media library (e.g. <code>\\NAS\Media\Movies\Movie Title (Year)\Movie.Title.Year.mkv</code>).</p></div></div>
+        <div class="step"><div class="step-body"><div class="step-title">Add to Queue and Encode</div><p>Click <strong>Add to Queue</strong> then <strong>Start Queue</strong>. Blu-ray x265 encodes take 1–4 hours. DVD encodes run 20–60 minutes.</p></div></div>
+        <div class="step"><div class="step-body"><div class="step-title">Place SRT and Verify Playback</div><p>Move the <code>.en.srt</code> alongside the finished <code>.mkv</code>. Verify in VLC or your media server: video clean, surround audio present, subtitles in track menu. Delete staging MKV once satisfied.</p></div></div>
+      </div>
+      <div class="callout"><div class="callout-label info">Expected File Sizes</div>Blu-ray → x265 RF 22: <strong>4–10 GB</strong> per film &nbsp;|&nbsp; DVD → x265 RF 18–20: <strong>700 MB–2 GB</strong> per film</div>
+    </div>
+
+    <div class="section" id="reference" style="animation-delay:0.35s">
+      <div class="section-header"><div class="section-num">06</div><h2>Quick Reference</h2></div>
+      <div class="settings-grid">
+        <div class="settings-grid-header">Settings at a Glance</div>
+        <table>
+          <thead><tr><th>Parameter</th><th>Blu-ray</th><th>DVD</th></tr></thead>
+          <tbody>
+            <tr><td class="td-label">Container</td><td class="td-val">MKV</td><td class="td-val">MKV</td></tr>
+            <tr><td class="td-label">Video Codec</td><td class="td-val">H.265 x265</td><td class="td-val">H.265 x265</td></tr>
+            <tr><td class="td-label">Resolution</td><td class="td-val">Native 1080p</td><td class="td-val">Native 480p</td></tr>
+            <tr><td class="td-label">RF Quality</td><td class="td-val">22</td><td class="td-val">18–20</td></tr>
+            <tr><td class="td-label">Encoder Preset</td><td class="td-val">Medium</td><td class="td-val">Medium</td></tr>
+            <tr><td class="td-label">Audio Track 1</td><td class="td-val">AAC Stereo 192k</td><td class="td-val">AAC Stereo 160k</td></tr>
+            <tr><td class="td-label">Audio Track 2</td><td class="td-val">AC3 5.1 Passthru</td><td class="td-val">AC3 5.1 Passthru</td></tr>
+            <tr><td class="td-label">Deinterlace</td><td class="td-val">Off</td><td class="td-val">Decomb Default</td></tr>
+            <tr><td class="td-label">Detelecine</td><td class="td-val">Off</td><td class="td-val">Default</td></tr>
+            <tr><td class="td-label">Subtitles</td><td class="td-val">External .en.srt</td><td class="td-val">External .en.srt</td></tr>
+            <tr><td class="td-label">Subtitle Source</td><td class="td-val">PGS → BDSup2Sub++</td><td class="td-val">VOB → BDSup2Sub++</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="settings-grid" style="margin-top:20px">
+        <div class="settings-grid-header">Required Software</div>
+        <table>
+          <thead><tr><th>Tool</th><th>Purpose</th><th>Source</th></tr></thead>
+          <tbody>
+            <tr><td class="td-label">MakeMKV</td><td class="td-val">Disc decryption + lossless extraction</td><td class="td-val">makemkv.com</td></tr>
+            <tr><td class="td-label">HandBrake</td><td class="td-val">x265 compression</td><td class="td-val">handbrake.fr</td></tr>
+            <tr><td class="td-label">MKVToolNix</td><td class="td-val">Subtitle track extraction</td><td class="td-val">mkvtoolnix.download</td></tr>
+            <tr><td class="td-label">BDSup2Sub++</td><td class="td-val">PGS/VOB → SRT conversion</td><td class="td-val">github.com/mjuhasz/BDSup2Sub</td></tr>
+            <tr><td class="td-label">Subtitle Edit</td><td class="td-val">SRT review + OCR correction (optional)</td><td class="td-val">subtitleedit.org</td></tr>
+            <tr><td class="td-label">Adoptium JRE 21</td><td class="td-val">Required for BDSup2Sub++ (.jar)</td><td class="td-val">adoptium.net</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+  </main>
+
+  <footer>
+    <span>THEWASTELANDER.COM // FIELD MANUAL SERIES // DOC-07</span>
+    <span>
+      <a href="index.html">Home</a> &nbsp;·&nbsp;
+      <a href="news.html">News</a> &nbsp;·&nbsp;
+      <a href="guides.html">Guides</a> &nbsp;·&nbsp;
+      <a href="#">↑ Top</a>
+    </span>
+  </footer>
+
+  <script>
+    function switchTab(el, panelId) {
+      document.querySelectorAll('.format-tab').forEach(t => t.classList.remove('active'));
+      document.querySelectorAll('.format-panel').forEach(p => p.classList.remove('active'));
+      el.classList.add('active');
+      document.getElementById('panel-' + panelId).classList.add('active');
+    }
+    document.querySelectorAll('.section').forEach((el, i) => {
+      el.style.animationDelay = (i * 0.07) + 's';
+    });
+  </script>
+
+</body>
+</html>
