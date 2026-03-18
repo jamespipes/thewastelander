@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="The Wastelander — homelab builds, self-hosting guides, digital rights, and field documentation from the tech wasteland." />
+  <title>The Wastelander // thewastelander.com</title>
+  <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@300;400;600;700&family=Share+Tech+Mono&family=Source+Serif+4:ital,wght@0,300;0,400;1,300&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --amber:#e8a020; --amber-dim:#a86e10; --amber-glow:#ffbe44;
+      --green:#4ade80; --red:#ef4444;
+      --bg:#0a0905; --bg-panel:#100e08; --bg-raised:#161209;
+      --border:#2a2218; --border-lit:#4a3a20;
+      --text:#c8a870; --text-dim:#7a6040; --text-bright:#f0d090;
+      --mono:'Share Tech Mono',monospace; --display:'Oswald',sans-serif; --serif:'Source Serif 4',serif;
+    }
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+    html{scroll-behavior:smooth;}
+    body{background:var(--bg);color:var(--text);font-family:var(--serif);font-weight:300;font-size:16px;line-height:1.7;}
+    body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,0,0,0.08) 2px,rgba(0,0,0,0.08) 4px);pointer-events:none;z-index:9999;}
+    body::after{content:'';position:fixed;inset:0;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");pointer-events:none;z-index:9998;opacity:0.4;}
+    @keyframes blink{0%,100%{opacity:1}50%{opacity:0}}
+    @keyframes fadeup{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
+    @keyframes scandown{from{transform:translateY(-100%)}to{transform:translateY(100vh)}}
+
+    .tape{background:var(--amber);color:var(--bg);font-family:var(--mono);font-size:11px;letter-spacing:0.15em;padding:5px 40px;display:flex;justify-content:space-between;align-items:center;}
+    .tape .blink{animation:blink 1.2s step-end infinite;}
+
+    header{padding:56px 40px 40px;border-bottom:1px solid var(--border-lit);background:linear-gradient(180deg,#1a1408 0%,var(--bg) 100%);position:relative;overflow:hidden;}
+    header .scan-line{position:absolute;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,rgba(232,160,32,0.15),transparent);animation:scandown 6s linear infinite;pointer-events:none;}
+    .eyebrow{font-family:var(--mono);font-size:11px;letter-spacing:0.3em;color:var(--amber-dim);text-transform:uppercase;margin-bottom:16px;}
+    h1{font-family:var(--display);font-weight:700;font-size:clamp(2.4rem,5vw,4rem);line-height:1;letter-spacing:0.06em;text-transform:uppercase;color:var(--amber-glow);text-shadow:0 0 40px rgba(232,160,32,0.3),0 0 80px rgba(232,160,32,0.1);margin-bottom:12px;animation:fadeup 0.6s ease both;}
+    .header-sub{font-family:var(--mono);font-size:12px;letter-spacing:0.2em;color:var(--text-dim);text-transform:uppercase;margin-bottom:28px;}
+    .header-meta{display:flex;gap:24px;flex-wrap:wrap;}
+    .meta-item{font-family:var(--mono);font-size:11px;letter-spacing:0.12em;color:var(--text-dim);display:flex;align-items:center;gap:8px;}
+    .meta-item span{color:var(--amber);}
+
+    nav{background:var(--bg-panel);border-bottom:1px solid var(--border);padding:0 40px;display:flex;overflow-x:auto;gap:0;position:sticky;top:0;z-index:100;}
+    nav a{font-family:var(--mono);font-size:11px;letter-spacing:0.12em;text-transform:uppercase;color:var(--text-dim);text-decoration:none;padding:14px 20px;border-right:1px solid var(--border);white-space:nowrap;transition:color 0.15s,background 0.15s;}
+    nav a:first-child{border-left:1px solid var(--border);}
+    nav a:hover,nav a.active{color:var(--amber);background:rgba(232,160,32,0.05);}
+
+    main{max-width:1100px;margin:0 auto;padding:56px 40px 40px;}
+
+    /* HERO */
+    .hero-grid{display:grid;grid-template-columns:1fr 320px;gap:40px;margin-bottom:64px;animation:fadeup 0.5s ease both;}
+    .hero-desc{font-size:1.05rem;line-height:1.8;color:var(--text);margin-bottom:14px;}
+    .hero-desc em{font-style:italic;color:var(--text-bright);}
+    .btn-row{display:flex;gap:8px;flex-wrap:wrap;margin-top:24px;}
+    .btn{font-family:var(--mono);font-size:11px;letter-spacing:0.15em;text-transform:uppercase;text-decoration:none;padding:10px 20px;border:1px solid var(--border-lit);color:var(--amber);background:var(--bg-panel);transition:all 0.15s;cursor:pointer;display:inline-block;}
+    .btn:hover{background:var(--amber);color:var(--bg);border-color:var(--amber);}
+    .btn.primary{background:var(--amber);color:var(--bg);border-color:var(--amber);}
+    .btn.primary:hover{background:var(--amber-glow);border-color:var(--amber-glow);}
+
+    /* STATUS PANEL */
+    .status-panel{background:var(--bg-panel);border:1px solid var(--border-lit);padding:20px;}
+    .status-title{font-family:var(--mono);font-size:10px;letter-spacing:0.25em;color:var(--amber-dim);text-transform:uppercase;padding-bottom:12px;border-bottom:1px solid var(--border);margin-bottom:16px;}
+    .status-row{display:flex;justify-content:space-between;align-items:center;padding:7px 0;border-bottom:1px solid var(--border);font-family:var(--mono);font-size:11px;}
+    .status-row:last-child{border-bottom:none;}
+    .status-label{color:var(--text-dim);letter-spacing:0.08em;}
+    .status-val{color:var(--text-bright);letter-spacing:0.05em;}
+    .status-val.online{color:var(--green);}
+    .status-val.pending{color:var(--amber);}
+    .status-val.offline{color:var(--red);}
+    .dot{display:inline-block;width:6px;height:6px;border-radius:50%;margin-right:6px;}
+    .dot.online{background:var(--green);box-shadow:0 0 6px var(--green);}
+    .dot.pending{background:var(--amber);animation:blink 1.5s step-end infinite;}
+    .dot.offline{background:var(--red);}
+
+    /* SECTIONS */
+    .section{margin-bottom:64px;animation:fadeup 0.5s ease both;}
+    .section-head{display:flex;align-items:center;gap:14px;padding-bottom:14px;border-bottom:1px solid var(--border-lit);margin-bottom:32px;}
+    .sec-num{font-family:var(--mono);font-size:11px;color:var(--amber-dim);border:1px solid var(--border-lit);background:var(--bg-panel);padding:3px 9px;letter-spacing:0.1em;flex-shrink:0;}
+    h2{font-family:var(--display);font-weight:600;font-size:1.3rem;letter-spacing:0.12em;text-transform:uppercase;color:var(--text-bright);}
+    h3{font-family:var(--display);font-weight:400;font-size:1rem;letter-spacing:0.14em;text-transform:uppercase;color:var(--amber);margin:40px 0 16px;}
+
+    /* EXPANDABLE POST CARDS */
+    .post-list{display:flex;flex-direction:column;gap:4px;}
+
+    .post-card{background:var(--bg-panel);border:1px solid var(--border);position:relative;overflow:hidden;transition:border-color 0.15s;}
+    .post-card.featured{border-color:var(--border-lit);}
+    .post-card.open{border-color:var(--border-lit);}
+
+    .post-card-header{display:grid;grid-template-columns:1fr auto;align-items:stretch;cursor:pointer;user-select:none;}
+
+    .post-card-top{padding:18px 20px 14px;}
+    .post-tag{font-family:var(--mono);font-size:10px;letter-spacing:0.2em;color:var(--amber-dim);text-transform:uppercase;margin-bottom:8px;}
+    .post-card.featured .post-tag{color:var(--amber);}
+    .post-title{font-family:var(--display);font-weight:600;font-size:1.05rem;letter-spacing:0.08em;text-transform:uppercase;color:var(--text-bright);margin-bottom:6px;}
+    .post-date{font-family:var(--mono);font-size:10px;color:var(--text-dim);letter-spacing:0.1em;margin-bottom:10px;}
+    .post-desc{font-size:0.88rem;color:var(--text);line-height:1.6;}
+
+    .post-toggle{display:flex;align-items:center;justify-content:center;width:48px;border-left:1px solid var(--border);background:rgba(0,0,0,0.15);flex-shrink:0;}
+    .post-arrow{font-family:var(--mono);font-size:18px;color:var(--text-dim);transition:color 0.15s,transform 0.25s;display:inline-block;}
+    .post-card-header:hover .post-arrow{color:var(--amber);}
+    .post-card.open .post-arrow{transform:rotate(90deg);color:var(--amber);}
+
+    .post-expand{display:none;border-top:1px solid var(--border);}
+    .post-card.open .post-expand{display:block;}
+
+    .post-expand-inner{padding:24px 20px;}
+    .post-expand-inner p{font-size:0.92rem;color:var(--text);line-height:1.8;margin-bottom:14px;}
+    .post-expand-inner p:last-child{margin-bottom:0;}
+    .post-expand-inner em{font-style:italic;color:var(--text-bright);}
+    .post-expand-inner strong{color:var(--text-bright);font-style:normal;}
+
+    .post-expand-footer{display:flex;justify-content:space-between;align-items:center;padding:12px 20px;border-top:1px solid var(--border);font-family:var(--mono);font-size:10px;}
+    .post-status{display:flex;align-items:center;gap:6px;}
+
+    .p-callout{border-left:3px solid var(--amber);background:rgba(232,160,32,0.05);padding:12px 16px;margin:16px 0;font-size:0.875rem;}
+    .p-callout-label{font-family:var(--mono);font-size:10px;letter-spacing:0.2em;text-transform:uppercase;color:var(--amber);margin-bottom:6px;}
+
+    /* ABOUT SECTION */
+    .about-grid{display:grid;grid-template-columns:1fr 280px;gap:40px;}
+    .about-prose p{font-size:0.92rem;margin-bottom:14px;line-height:1.8;}
+    .about-prose em{font-style:italic;color:var(--text-bright);}
+    .callout{border-left:3px solid var(--amber);background:rgba(232,160,32,0.05);padding:14px 18px;margin:20px 0;font-size:0.87rem;}
+    .callout-label{font-family:var(--mono);font-size:10px;letter-spacing:0.2em;text-transform:uppercase;color:var(--amber);margin-bottom:6px;}
+
+    /* BACK TO TOP */
+    .back-to-top{max-width:1100px;margin:0 auto;padding:0 40px 56px;display:flex;justify-content:flex-end;}
+
+    footer{border-top:1px solid var(--border);padding:24px 40px;font-family:var(--mono);font-size:10px;letter-spacing:0.15em;color:var(--text-dim);display:flex;justify-content:space-between;flex-wrap:wrap;gap:12px;}
+    footer a{color:var(--amber-dim);text-decoration:none;}
+    footer a:hover{color:var(--amber);}
+
+    @media(max-width:900px){.hero-grid,.about-grid{grid-template-columns:1fr;}.status-panel{display:none;}}
+    @media(max-width:640px){header,main,footer{padding-left:20px;padding-right:20px;}nav{padding:0 20px;}.tape{padding:5px 20px;}.back-to-top{padding-left:20px;padding-right:20px;}}
+  </style>
+</head>
+<body>
+
+  <div class="tape">
+    <span>THEWASTELANDER.COM // FIELD DOCUMENTATION &nbsp;//&nbsp; LATEST: YOU DON'T OWN ANYTHING. YET.</span>
+    <span class="blink">● TRANSMITTING</span>
+  </div>
+
+  <header>
+    <div class="scan-line"></div>
+    <div class="eyebrow">Field Documentation // Homelab, Builds &amp; Digital Rights</div>
+    <h1>The Wastelander</h1>
+    <div class="header-sub">Surviving the tech wasteland — one build at a time</div>
+    <div class="header-meta">
+      <div class="meta-item">DOMAIN <span>thewastelander.com</span></div>
+      <div class="meta-item">HOST <span>Cloudflare Pages</span></div>
+      <div class="meta-item">STATUS <span style="color:var(--green)">● ONLINE</span></div>
+    </div>
+  </header>
+
+  <nav>
+    <a href="index.html" class="active">Home</a>
+    
+    <a href="guides.html">Guides</a>
+    <a href="about.html">About</a>
+  </nav>
+
+  <main>
+
+    <!-- HERO -->
+    <div class="hero-grid">
+      <div>
+        <p class="hero-desc">Welcome to The Wastelander — a field journal documenting homelab builds, hardware experiments, self-hosting guides, and the ongoing fight for <em>digital ownership</em>. No cloud dependencies. No monthly fees. No one else's rules.</p>
+        <p class="hero-desc">Projects span a full home network overhaul, a 3-machine Proxmox homelab, a self-hosted media stack, and a running commentary on why you don't actually own the things you think you've paid for — <em>and what to do about it</em>.</p>
+        <div class="btn-row">
+          <a href="guides.html" class="btn primary">Guides</a>
+          <a href="#about" class="btn">About</a>
+        </div>
+      </div>
+      <div class="status-panel">
+        <div class="status-title">// System Status</div>
+        <div class="status-row"><span class="status-label">Home Network</span><span class="status-val pending"><span class="dot pending"></span>In Progress</span></div>
+        <div class="status-row"><span class="status-label">Homelab</span><span class="status-val pending"><span class="dot pending"></span>Planning</span></div>
+        <div class="status-row"><span class="status-label">Unraid NAS</span><span class="status-val pending"><span class="dot pending"></span>Migrating</span></div>
+        <div class="status-row"><span class="status-label">Proxmox Backup</span><span class="status-val offline"><span class="dot offline"></span>Pending</span></div>
+        <div class="status-row"><span class="status-label">Media Stack</span><span class="status-val offline"><span class="dot offline"></span>Pending</span></div>
+        <div class="status-row"><span class="status-label">thewastelander.com</span><span class="status-val online"><span class="dot online"></span>Online</span></div>
+      </div>
+    </div>
+
+    <!-- POSTS: FEATURED -->
+    <div class="section" id="posts">
+      <div class="section-head">
+        <div class="sec-num">//</div>
+        <h2>Latest Dispatches</h2>
+      </div>
+
+      <div class="post-list">
+        <div class="post-card featured" id="post-featured">
+          <div class="post-card-header" onclick="togglePost('post-featured')">
+            <div class="post-card-top">
+              <div class="post-tag">Latest // Digital Rights</div>
+              <div class="post-title">You Don't Own Anything. Yet.</div>
+              <div class="post-date">2025 — Most Recent</div>
+              <div class="post-desc">Your movies, music, and photos live on someone else's server under someone else's rules. Streaming platforms pull content. Ebook sellers delete libraries. Here's how self-hosting gives you back control — and why that old laptop is your first step.</div>
+            </div>
+            <div class="post-toggle"><span class="post-arrow">→</span></div>
+          </div>
+          <div class="post-expand">
+            <div class="post-expand-inner">
+              <p>Remember that movie you <strong>"bought"</strong> on Vudu? That album in your Google Play library? That show you watched a dozen times? One day — no warning — it's just gone. Pulled. Delisted. Because you never actually owned it. <em>You rented the right to watch it.</em></p>
+              <p>Streaming platforms remove content constantly. Studios fight over licensing. Services shut down. Your digital "purchases" are licenses — and licenses can be revoked. Your photos on iCloud, Google Photos? Those live on someone else's hardware, subject to someone else's terms of service. Even ebooks from Amazon can vanish from your Kindle overnight. <strong>DRM</strong> — Digital Rights Management — is the lock they put on the media you think you own.</p>
+              <div class="p-callout">
+                <div class="p-callout-label">The Fix</div>
+                Self-host your media. Run your own server. Own your files. Control your data.
+              </div>
+              <p><strong>Jellyfin</strong> — Your own Netflix. Stream your movies and TV to any device, anywhere. Free. No subscription. Nobody pulls your library.<br><br>
+              <strong>Immich</strong> — Your own Google Photos. Every picture from your phone backed up automatically — to YOUR hardware. Private. Permanent.<br><br>
+              <strong>Navidrome</strong> — Your own Spotify. Your music, your rules.<br><br>
+              <strong>DRM-free ebooks</strong> from Humble Bundle or Standard Ebooks, managed in Calibre. Nobody deletes your bookshelf.</p>
+              <p>Got an old laptop from 2015? A desktop collecting dust? <em>That's a server.</em> Most home media setups run beautifully on hardware people throw away — an old i5, 8GB RAM, a couple of hard drives. You don't need new hardware. You need the right setup. I'll take old computers and hardware in trade for server setup or computer work.</p>
+            </div>
+            <div class="post-expand-footer">
+              <div class="post-status"><span class="dot online"></span><span style="font-family:var(--mono);font-size:10px;color:var(--green);letter-spacing:0.1em">PUBLISHED</span></div>
+              <span style="color:var(--text-dim)">Digital Rights // Self-Hosting // 2025</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ALL POSTS -->
+      <h3>All Posts</h3>
+      <div class="post-list">
+
+        <div class="post-card" id="post-1">
+          <div class="post-card-header" onclick="togglePost('post-1')">
+            <div class="post-card-top">
+              <div class="post-tag">Digital Rights</div>
+              <div class="post-title">You Don't Own Anything. Yet.</div>
+              <div class="post-date">2025</div>
+              <div class="post-desc">Your movies, music, and photos live on someone else's server under someone else's rules.</div>
+            </div>
+            <div class="post-toggle"><span class="post-arrow">→</span></div>
+          </div>
+          <div class="post-expand">
+            <div class="post-expand-inner">
+              <p>Remember that movie you <strong>"bought"</strong> on Vudu? That album in your Google Play library? That show you watched a dozen times? One day — no warning — it's just gone. Pulled. Delisted. Because you never actually owned it. <em>You rented the right to watch it.</em></p>
+              <p>Streaming platforms remove content constantly. Studios fight over licensing. Services shut down. Your digital "purchases" are licenses — and licenses can be revoked. Your photos on iCloud, Google Photos? Those live on someone else's hardware, subject to someone else's terms of service. Even ebooks from Amazon can vanish from your Kindle overnight. <strong>DRM</strong> — Digital Rights Management — is the lock they put on the media you think you own.</p>
+              <div class="p-callout">
+                <div class="p-callout-label">The Fix</div>
+                Self-host your media. Run your own server. Own your files. Control your data.
+              </div>
+              <p><strong>Jellyfin</strong> — Your own Netflix. Stream your movies and TV to any device, anywhere. Free. No subscription. Nobody pulls your library.<br><br>
+              <strong>Immich</strong> — Your own Google Photos. Every picture from your phone backed up automatically — to YOUR hardware. Private. Permanent.<br><br>
+              <strong>Navidrome</strong> — Your own Spotify. Your music, your rules.<br><br>
+              <strong>DRM-free ebooks</strong> from Humble Bundle or Standard Ebooks, managed in Calibre. Nobody deletes your bookshelf.</p>
+              <p>Got an old laptop from 2015? A desktop collecting dust? <em>That's a server.</em> Most home media setups run beautifully on hardware people throw away — an old i5, 8GB RAM, a couple of hard drives. You don't need new hardware. You need the right setup. I'll take old computers and hardware in trade for server setup or computer work.</p>
+            </div>
+            <div class="post-expand-footer">
+              <div class="post-status"><span class="dot online"></span><span style="font-family:var(--mono);font-size:10px;color:var(--green);letter-spacing:0.1em">PUBLISHED</span></div>
+              <span style="color:var(--text-dim)">Digital Rights // 2025</span>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- ABOUT -->
+    <div class="section" id="about">
+      <div class="section-head">
+        <div class="sec-num">01</div>
+        <h2>About</h2>
+      </div>
+      <div class="about-grid">
+        <div class="about-prose">
+          <p>The Wastelander is a personal build documentation site and field journal — a place to record what works, what doesn't, and why certain decisions were made. The wasteland is unforgiving, but <em>knowledge endures</em>.</p>
+          <p>Projects documented here include a full home network rebuild, a three-machine homelab running Proxmox VE and Unraid, a self-hosted media and music stack, and various 3D printing builds designed to hold it all together physically. On the other side of that: writing about digital rights, the slow con the tech industry has been running on all of us, and what regular people can do about it.</p>
+          <p>Everything is documented as it happens — including the mistakes. <em>Especially the mistakes.</em></p>
+          <div class="callout">
+            <div class="callout-label">Philosophy</div>
+            Self-hosted where possible. Local-first always. Cloud only when there's no reasonable alternative. Technology should work for the person who owns it — not for the company that sold it to them.
+          </div>
+          <p>I help regular people build personal servers, repair computers, and take back control of their data. Old hardware accepted in trade. No jargon. No judgment. Just results.</p>
+        </div>
+        <div>
+          <div class="status-panel">
+            <div class="status-title">// Site Info</div>
+            <div class="status-row"><span class="status-label">Host</span><span class="status-val">Cloudflare Pages</span></div>
+            <div class="status-row"><span class="status-label">Domain</span><span class="status-val">thewastelander.com</span></div>
+            <div class="status-row"><span class="status-label">DNS</span><span class="status-val">Cloudflare</span></div>
+            <div class="status-row"><span class="status-label">SSL</span><span class="status-val online">Active</span></div>
+
+            <div class="status-row"><span class="status-label">Git Repo</span><span class="status-val">GitHub → Gitea</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </main>
+
+  <div class="back-to-top">
+    <a href="#" class="btn">↑ Back to Top</a>
+  </div>
+
+  <footer>
+    <span>THEWASTELANDER.COM // FIELD DOCUMENTATION // ALL RIGHTS RESERVED</span>
+    <span><a href="#">↑ Top</a></span>
+  </footer>
+
+  <script>
+    function togglePost(id) {
+      const card = document.getElementById(id);
+      card.classList.toggle('open');
+    }
+
+    document.querySelectorAll('.section').forEach((el, i) => {
+      el.style.animationDelay = (i * 0.08) + 's';
+    });
+  </script>
+
+</body>
+</html>
